@@ -75,17 +75,61 @@ function flipCard(){
 
     //check to see if there are two cards in the array
     //then check to see if theres a match.... == means check if theyre same type while === check to see if theyre the same value
-    if(clickedCards.length == 4){
+    if(clickedCards.length == 2){
         //check to see if the two cards have the same id
         if(clickedCards[0].id == clickedCards[1].id){
-            console.log("match");
+            //console.log("match");
+            //call the function to create an overlay message
+            createOverlay("match");
         }else{
-            console.log("no match");
+            //call the function to create an overlay message
+            createOverlay("nomatch");
+
+            //if it's not a match, flip the cards back over (change the class)...
+            //the forEach loop looks at an array and does something to each thing in that array
+            //you have to pass it a temporary variable (we're using thisCard) to store each item in the array
+            clickedCards.forEach(function(thisCard){
+                thisCard.className = "card";
+            });
         }
+
+        //make the array an empty array, regardless of whether there's a match or not
+        clickedCards = [];
     }
-}
+    }
 
 }
 
 
+//this function creates an overlay to display a message to the user
+//messageType is a variable to store the information sent to the function (when we called it)
+function createOverlay(messageType){
+    //console.log("overlay");
+    //create a div for the overlay background, give it an id
+    //add it to the body element (outside of the rest of your HTML)
+    const overlay = document.createElement("div");
+    overlay.id = "overlay"; //we want to add the overlay to the body of an id
+    //add an event listener to remove the overlay when clicked
+    overlay.addEventListener("click", totalExistenceFailure);
 
+    //add a message to the overlay by creating a paragraph, add the message, then put the overlay on the paragraph
+    const para = document.createElement("p");
+    //check which type of overlay this is
+    //use the switch statement for multiple options
+    switch(messageType){
+        case "nomatch" :
+            para.textContent = "No Match!";
+            break; //stops the switch statement from running
+        case "match":
+            para.textContent = "Match!";
+            break; //stops the switch statement from running 
+    }
+
+    overlay.appendChild(para);
+    document.querySelector("body").appendChild(overlay);
+}
+
+function totalExistenceFailure(){
+    //we have to get the elements parent to remove the element
+    this.parentNode.removeChild(this);
+}
