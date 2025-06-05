@@ -58,19 +58,36 @@ function flipCard(){
     //change the card's class.... because the word "click" is attached to the function (("click", flipCard);  and   function flipCard()) we can use the keyword "this"
     this.className = "cardFlipped";
 
+    //add to the count of moves
+    moves++;
+    //add text to the oage that shows the players number of moves
+    document.querySelector("#moves").textContent = "Moves: " + moves;
+
+    //check to see if card doesn't have an ID
+    if(this.id == ""){
+
+
     //get a random number between 0 and 11 (because the first position of an array is 0)
     //Math.random() gets you a random decimal btw 0 and 1 (like 0.45, 0.87)
     //multiply the random number by 12, then subtract a small amount so it never actually hits 12
     //Math.floor() rounds a number down
+    //.....INSTEAD OF THE FIXED VALUE OF 12, USE THE LENGTH OF THE ARRAY
 
-    let ran = Math.floor(Math.random()*12 - 0.001);
+    let ran = Math.floor(Math.random()*colourPool.length - 0.001);
     
     //based on the random number, assign the card an ID (from the color pool array up)
     this.id = colourPool[ran];
 
+    //remove that ID from the array
+    colourPool.splice(ran, 1);
+    //it needs two values; the position in the array to start from
+    //and how many things to remove
+    console.log(colourPool);
+     }
+
     //since the card has been clicked, add it to the array that holds which cards are clicked
     //.push adds something to the end of an array
-    clickedCards.push(this);
+    clickedCards.push(this);   //we added the card to the array using push
     //console.log(clickedCards);
 
     //check to see if there are two cards in the array
@@ -78,23 +95,30 @@ function flipCard(){
     if(clickedCards.length == 2){
         //check to see if the two cards have the same id
         if(clickedCards[0].id == clickedCards[1].id){
+            //if there is a match, add 1 to the match score++;
+            score++;
+
+            //if there are 6 matches, the user has won
+            if(score == 6){
+                createOverlay("won");
+            }else{
             //console.log("match");
             //call the function to create an overlay message
             createOverlay("match");
+
+            }
+            //if there was a match, create an array so no cards get flipped back
+            clickedCards = [];
+            
         }else{
             //call the function to create an overlay message
             createOverlay("nomatch");
 
-            //if it's not a match, flip the cards back over (change the class)...
-            //the forEach loop looks at an array and does something to each thing in that array
-            //you have to pass it a temporary variable (we're using thisCard) to store each item in the array
-            clickedCards.forEach(function(thisCard){
-                thisCard.className = "card";
-            });
+           
         }
 
         //make the array an empty array, regardless of whether there's a match or not
-        clickedCards = [];
+        
     }
     }
 
@@ -119,17 +143,39 @@ function createOverlay(messageType){
     switch(messageType){
         case "nomatch" :
             para.textContent = "No Match!";
+            para.classList.add("bad");
             break; //stops the switch statement from running
         case "match":
             para.textContent = "Match!";
+            para.classList.add("good");
             break; //stops the switch statement from running 
+            case "won":
+            para.textContent = "You Won!";
+            para.classList.add("good");    
     }
 
     overlay.appendChild(para);
-    document.querySelector("body").appendChild(overlay);
+    document.querySelector("body").appendChild(overlay);  //we added the overlay here
 }
 
 function totalExistenceFailure(){
-    //we have to get the elements parent to remove the element
+    //we have to get the elements parent to remove the element; which is the overlay
     this.parentNode.removeChild(this);
+
+
+//after the message is destroyed. then we should flip the cards over
+flipCardBack();
+}
+
+function flipCardBack(){
+    //this function will flip the cards over if there is no match
+     //if it's not a match, flip the cards back over (change the class)...
+    //the forEach loop looks at an array and does something to each thing in that array
+    //you have to pass it a temporary variable (we're using thisCard) to store each item in the array
+            clickedCards.forEach(function(thisCard){
+                thisCard.className = "card";
+            });
+
+            //empty the card array
+            clickedCards = [];
 }
